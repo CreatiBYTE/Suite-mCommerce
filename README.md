@@ -114,3 +114,99 @@ Ejemplo:
   "token": "8243078589705454"
 }
 ```
+
+
+
+
+## Cobro con Token
+Servicio POST que permite invocar un cobro usando el token registrado previamente desde el dispositivo. 
+
+Ejemplo:
+
+```json
+{
+  "urlResponse": "https://dev3.mitec.com.mx/pgs/jsp/demoEcommRespuesta.jsp",
+  "paymentData": {
+    "branch": "004",
+    "company": "1015",
+    "country": "MEX",
+    "user": "1015JUAN0",
+    "password": "TEMPORAL1",
+    "merchant": "06330",
+    "currency": "MXN",
+    "operationType": "6",
+    "reference": "COBROTDC002",
+    "amount": "15.00",
+    "token": "3716355370080597"
+    }
+}
+```
+
+Para consumir el servicio se envía una cadena cifrada en el parámetro POST “xml”, la cadena en claro es una cadena JSON con los siguientes atributos:
+
+
+|Propiedad         |Descripción                                                   |¿Obligatorio?|
+|------------------|--------------------------------------------------------------|:-----------:|
+|urlREsponse     |URL donde enviará la respuesta|                                |Sí| 
+|paymentData|||
+|branch          |Sucursal para procesar pago con token                         |Sí| 
+|company         |Empresa para procesar pago con token                          |Sí| 
+|country         |País, debe contener el valor MEX                              |Sí| 
+|user            |Usuario centro de pagos para procesar pago con token          |Sí| 
+|password        |Password del usuario centro de pagos para autenticación       |Sí|
+|merchant        |Afiliación (ID) con la que procesará el pago con token        |Sí| 
+|currency        |Moneda de la transacción, debe contener el valor MXN          |Sí| 
+|operationType   |Forma de operar                                               |Sí| 
+|reference       |Referencia del cliente para identificar la petición de pago   |Sí| 
+|amount          |Monto del cobro                                               |Sí| 
+|token           |Token de la tarjeta de cobro                                  |Sí| 
+
+La respuesta será enviada a la URL indicada en el atributo ´urlResponse´, dentro del parámetro ´strResponse´ el cual contendrá una cadena JSON cifrada en AES, con la estructura siguiente:
+
+|Propiedad           |Descripción                                    |¿Obligatorio?|
+|--------------------|-----------------------------------------------|-------------|
+|cdResponse      |Código de respuesta de la petición|Sí|
+|branch|Sucursal que procesó el pago con token |Sí| 
+|nbResponse      |Descripción de la respuesta                                             |Sí| 
+|response        |Descripción de respuesta en cobro                                       |Sí| 
+|foliocpagos     |Folio de pago (pgs)                                                     |No| 
+|auth            |Número de autorización (pgs)                                            |No|
+|reference       |Referencia (pgs)                                                        |No| 
+|time            |Hora de la transacción (pgs)                                            |No| 
+|date            |Fecha de la transacción (pgs)                                           |No| 
+|nb_company      |Nombre de la empresa que realizó el cobro (pgs)                         |No| 
+|nb_merchant     |Nombre de la afiliación (pgs)                                           |No| 
+|nb_street       |Domicilio de la empresa (pgs)                                           |No| 
+|cc_type         |Tipo de tarjeta (pgs)                                                   |No| 
+|tp_operation    |Tipo de operación (pgs)                                                 |No| 
+|cc_name         |Nombre (pgs)                                                            |No| 
+|cc_number       |Últimos 4 dígitos de TDC (pgs)                                          |No| 
+|cc_expmonth     |Mes de expiración (pgs)                                                 |No| 
+|cc_expyear      |Año de expiración (pgs)                                                 |No| 
+|amount          |Monto de la transacción (pgs)                                           |No| 
+
+Ejemplo:
+```json
+{
+  "cdResponse": "00",
+  "nbResponse": "success",
+  "response": "approved",
+  "foliocpagos": "000000001",
+  "auth": "123456",
+  "reference": "REF115536",
+  "time": "13:31:42",
+  "date": "22/06/2016",
+  "nb_company": "Sandbox mCommerce",
+  "nb_merchant": "1234567 mCommerce",
+  "nb_street": "CORREGIDORA 92 COL. MIGUEL HIDALGO 1A SECCION, DISTRITO FEDERAL",
+  "cc_type": "CREDITO/MasterCard",
+  "tp_operation": "VENTA",
+  "cc_name": "",
+  "cc_number": "5454",
+  "cc_expmonth": "07",
+  "cc_expyear": "16",
+  "amount": "150.00"
+}
+```
+
+**Nota:** si durante este proceso se detectara que la autenticación de contexto no existe previamente o si esta ya expiró se hará un redireccionamiento a ese servicio con el fin de renovar las credenciales y posteriormente continuar con el cobro con token.
