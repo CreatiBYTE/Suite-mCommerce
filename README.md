@@ -95,5 +95,22 @@ Para consumir el servicio se envía una cadena cifrada en el parámetro POST “
 |merchant        |Afiliación (ID) con la que procesará 3DS                      |Sí| 
 |reference       |Referencia del cliente para identificar la petición de 3DS    |Sí| 
 
+La respuesta será enviada a la URL indicada en el atributo ´urlResponse´, dentro del parámetro ´strResponse´ el cual contendrá una cadena JSON cifrada en AES, con la estructura siguiente:
 
+|Propiedad           |Descripción                                    |¿Obligatorio?|
+|--------------------|-----------------------------------------------|-------------|
+|cdResponse          |Código de respuesta de la petición             |Sí| 
+|nbResponse          |Descripción de la respuesta                   |Sí| 
+|token               |Token generado para el dispositivo autenticados| No|
 
+Donde cdRespone=”00” es Respuesta exitosa, cualquier otro valor es de error
+
+Ejemplo:
+
+```json
+{
+  "cdResponse": "00",
+  "nbResponse": "success",
+  "token": "8243078589705454"
+}
+```
